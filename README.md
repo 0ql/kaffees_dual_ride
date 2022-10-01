@@ -1,9 +1,3 @@
-# Fabric Example Mod
+# Kaffee's Dual Ride
 
-## Setup
-
-For setup instructions please see the [fabric wiki page](https://fabricmc.net/wiki/tutorial:setup) that relates to the IDE that you are using.
-
-## License
-
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+This is a tiny mod that allows two players to sit on a horse. It uses the Fabric Api and is required on Client and Server. It is licensed under GPLv3. Sourcecode available on [Github](https://github.com/0ql/kaffees_dual_ride).
