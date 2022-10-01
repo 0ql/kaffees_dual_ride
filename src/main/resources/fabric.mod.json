@@ -1,0 +1,34 @@
+{
+	"schemaVersion": 1,
+	"id": "kaffees_dual_ride",
+	"version": "${version}",
+	"name": "Kaffee's Dual Ride",
+	"description": "Enable two players to sit on a Horse",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://github.com/0ql/kaffees_dual_ride",
+		"sources": "https://github.com/0ql/kaffees_dual_ride"
+	},
+	"license": "GPL3",
+	"icon": "assets/kaffees_dual_ride/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"de.tobiasvonmassow.kaffees_dual_ride.Kaffees_Dual_Ride"
+		]
+	},
+	"mixins": [
+		"kaffees_dual_ride.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.14.9",
+		"fabric-api": "*",
+		"minecraft": "~1.19",
+		"java": ">=17"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
