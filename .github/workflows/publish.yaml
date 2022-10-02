@@ -29,8 +29,7 @@ jobs:
           loaders: fabric
           game-versions: '1.19.2'
           files-primary: 'build/libs/kaffees_dual_ride-*.jar'
-          name: "Kaffee's Dual Ride ${{ github.event.release.tag_name }}"
-          version: ${{ github.event.release.tag_name }}
+          name: "Kaffee's Dual Ride"
           version-type: release
         
           modrinth-id: dv1QW2PN
@@ -39,4 +38,4 @@ jobs:
           curseforge-id: 683156
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
-          # github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
