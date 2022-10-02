@@ -1,4 +1,4 @@
-name: Publish
+name: Build and Publish
 on:
   release:
     types: [published]
@@ -7,11 +7,29 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        
+      - name : Validate Gradle Wrapper
+        uses : gradle/wrapper-validation-action@v1
+        
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          
+      - name: Clean Build
+        run: ./gradlew clean build --no-daemon    
+        
       - name: Publish to Modrinth and Curseforge
         uses: Kir-Antipov/mc-publish@v3.2
         with:
           loaders: fabric
           game-versions: '1.19.2'
+          files-primary: 'build/libs/kaffees_dual_ride-*.jar'
+          name: "Kaffee's Dual Ride ${{ github.event.release.tag_name }}"
+          version: ${{ github.event.release.tag_name }}
+          version-type: release
         
           modrinth-id: dv1QW2PN
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
