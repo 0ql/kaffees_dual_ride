@@ -16,6 +16,8 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
+          distribution: temurin
+          cache: gradle
           java-version: 17
           
       - name: Clean Build
