@@ -1,6 +1,10 @@
+name: Publish
+on:
+  release:
+    types: [published]
+
 jobs:
   build:
-    # ...
     steps:
       - uses: Kir-Antipov/mc-publish@v3.2
         with:
