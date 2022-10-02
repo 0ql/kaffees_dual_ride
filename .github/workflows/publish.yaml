@@ -1,0 +1,13 @@
+jobs:
+  build:
+    # ...
+    steps:
+      - uses: Kir-Antipov/mc-publish@v3.2
+        with:
+          modrinth-id: dv1QW2PN
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+          curseforge-id: 683156
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+
+          github-token: ${{ secrets.GITHUB_TOKEN }}
