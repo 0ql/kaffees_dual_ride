@@ -28,9 +28,8 @@ jobs:
         with:
           loaders: fabric
           game-versions: '1.19.2'
-          files-primary: 'build/libs/kaffees_dual_ride-*.jar'
-          name: "Kaffee's Dual Ride"
-          version-type: release
+          files-primary: build/libs/!(*-@(dev|sources|javadoc)).jar
+          files-secondary: build/libs/*-@(dev|sources|javadoc).jar
         
           modrinth-id: dv1QW2PN
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
