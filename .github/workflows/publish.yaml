@@ -4,14 +4,19 @@ on:
     types: [published]
 
 jobs:
-  build:
+  publish:
+    runs-on: ubuntu-latest
     steps:
-      - uses: Kir-Antipov/mc-publish@v3.2
+      - name: Publish to Modrinth and Curseforge
+        uses: Kir-Antipov/mc-publish@v3.2
         with:
+          loaders: fabric
+          game-versions: '1.19.2'
+        
           modrinth-id: dv1QW2PN
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
           curseforge-id: 683156
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # github-token: ${{ secrets.GITHUB_TOKEN }}
