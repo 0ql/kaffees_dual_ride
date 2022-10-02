@@ -11,7 +11,7 @@ public class Kaffees_Dual_Ride implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		UseEntityCallback.EVENT.register((player, world, hand, pos, hitResult) -> {
-			if (!player.isSpectator()) {
+			if (!player.isSpectator() && !player.isSneaking()) {
 				final Entity target = hitResult.getEntity();
 				if (target instanceof AbstractHorseEntity && target.getPassengerList().size() < 2) {
 					player.startRiding(target, true);
