@@ -17,14 +17,14 @@ public class DisableSecondRiderFromInterruptingHorseMixin {
 
     @Redirect(method = "onClientCommand(Lnet/minecraft/network/packet/c2s/play/ClientCommandC2SPacket;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/JumpingMount;startJumping(I)V"))
     private void startJumping(JumpingMount jm, int i) {
-        if (((AbstractHorseEntity)(Object)jm).getPassengerList().indexOf(this.player) == 0) {
+        if (((AbstractHorseEntity)jm).getPassengerList().indexOf(this.player) == 0) {
             jm.startJumping(i);
         }
     }
 
     @Redirect(method = "onClientCommand(Lnet/minecraft/network/packet/c2s/play/ClientCommandC2SPacket;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/JumpingMount;stopJumping()V"))
     private void stopJumping(JumpingMount jm) {
-        if (((AbstractHorseEntity)(Object)jm).getPassengerList().indexOf(this.player) == 0) {
+        if (((AbstractHorseEntity)jm).getPassengerList().indexOf(this.player) == 0) {
             jm.stopJumping();
         }
     }
