@@ -13,6 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 public class Kaffees_Dual_Ride_Mixin {
 	@Inject(at = @At(value = "TAIL"), method = "updatePassengerPosition(Lnet/minecraft/entity/Entity;)V", locals = LocalCapture.CAPTURE_FAILHARD)
 	private void injected(Entity passenger, CallbackInfo ci) {
+		// don't reposition riders if there is only one rider
+		if (((AbstractHorseEntity)(Object)this).getPassengerList().size() < 2) return;
 		// set passengerposition to the position of the horse
 		int i = ((AbstractHorseEntity)(Object)this).getPassengerList().indexOf(passenger);
 		// horizontal offset
