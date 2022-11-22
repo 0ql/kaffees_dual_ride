@@ -1,7 +1,6 @@
 package de.tobiasvonmassow.kaffees_dual_ride.mixin;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.AnimalEntity;
@@ -16,8 +15,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-
-import com.google.common.collect.ImmutableList;
 
 @Mixin(AbstractHorseEntity.class)
 public abstract class Kaffees_Dual_Ride_Mixin extends AnimalEntity {
@@ -41,7 +38,7 @@ public abstract class Kaffees_Dual_Ride_Mixin extends AnimalEntity {
 		passenger.setPosition(((AbstractHorseEntity)(Object)this).getX() + vec3d.x,((AbstractHorseEntity)(Object)this).getY() + (double)horizontal_offset,((AbstractHorseEntity)(Object)this).getZ() + vec3d.z);
 	}
 	
-	// abstract class + constructor required so I can extend AnimalEntity to perform this explicit override 
+	// abstract class + constructor required, so I can extend AnimalEntity to perform this explicit override
 	@Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         if (this.getPassengerList().size() > 0 && this.canAddPassenger(player)) {
@@ -60,5 +57,4 @@ public abstract class Kaffees_Dual_Ride_Mixin extends AnimalEntity {
         return 2;
     }
 
-	
 }

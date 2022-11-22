@@ -14,11 +14,6 @@
 	"license": "GPL3",
 	"icon": "assets/kaffees_dual_ride/icon.png",
 	"environment": "*",
-	"entrypoints": {
-		"main": [
-			"de.tobiasvonmassow.kaffees_dual_ride.Kaffees_Dual_Ride"
-		]
-	},
 	"mixins": [
 		"kaffees_dual_ride.mixins.json"
 	],
