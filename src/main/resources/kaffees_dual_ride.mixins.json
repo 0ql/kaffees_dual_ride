@@ -4,9 +4,10 @@
   "package": "de.tobiasvonmassow.kaffees_dual_ride.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "DisableSecondRiderFromInterruptingHorseMixin",
+    "Kaffees_Dual_Ride_Mixin"
   ],
   "client": [
-    "Kaffees_Dual_Ride_Mixin"
   ],
   "injectors": {
     "defaultRequire": 1
