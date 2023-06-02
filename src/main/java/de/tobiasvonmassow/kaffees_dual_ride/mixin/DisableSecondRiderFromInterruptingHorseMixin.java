@@ -11,21 +11,21 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(ServerPlayNetworkHandler.class)
 public class DisableSecondRiderFromInterruptingHorseMixin {
-    
-    @Shadow
-    public ServerPlayerEntity player;
 
-    @Redirect(method = "onClientCommand(Lnet/minecraft/network/packet/c2s/play/ClientCommandC2SPacket;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/JumpingMount;startJumping(I)V"))
-    private void startJumping(JumpingMount jm, int i) {
-        if (((AbstractHorseEntity)jm).getPassengerList().indexOf(this.player) == 0) {
-            jm.startJumping(i);
-        }
-    }
+	@Shadow
+	public ServerPlayerEntity player;
 
-    @Redirect(method = "onClientCommand(Lnet/minecraft/network/packet/c2s/play/ClientCommandC2SPacket;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/JumpingMount;stopJumping()V"))
-    private void stopJumping(JumpingMount jm) {
-        if (((AbstractHorseEntity)jm).getPassengerList().indexOf(this.player) == 0) {
-            jm.stopJumping();
-        }
-    }
+	@Redirect(method = "onClientCommand(Lnet/minecraft/network/packet/c2s/play/ClientCommandC2SPacket;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/JumpingMount;startJumping(I)V"))
+	private void startJumping(JumpingMount jm, int i) {
+		if (((AbstractHorseEntity) jm).getPassengerList().indexOf(this.player) == 0) {
+			jm.startJumping(i);
+		}
+	}
+
+	@Redirect(method = "onClientCommand(Lnet/minecraft/network/packet/c2s/play/ClientCommandC2SPacket;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/JumpingMount;stopJumping()V"))
+	private void stopJumping(JumpingMount jm) {
+		if (((AbstractHorseEntity) jm).getPassengerList().indexOf(this.player) == 0) {
+			jm.stopJumping();
+		}
+	}
 }
