@@ -23,8 +23,8 @@ public abstract class Kaffees_Dual_Ride_Mixin extends AnimalEntity {
 		super((EntityType<? extends AnimalEntity>) arg, arg2);
 	}
 
-	@Inject(at = @At(value = "TAIL"), method = "updatePassengerPosition(Lnet/minecraft/entity/Entity;)V", locals = LocalCapture.CAPTURE_FAILHARD)
-	private void injected(Entity passenger, CallbackInfo ci) {
+	@Inject(at = @At(value = "TAIL"), method = "updatePassengerPosition(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/Entity$PositionUpdater;)V", locals = LocalCapture.CAPTURE_FAILHARD)
+	private void injected(Entity passenger, Entity.PositionUpdater positionUpdater, CallbackInfo ci) {
 		// don't reposition riders if there is only one rider
 		if (((AbstractHorseEntity) (Object) this).getPassengerList().size() < 2)
 			return;
@@ -47,9 +47,9 @@ public abstract class Kaffees_Dual_Ride_Mixin extends AnimalEntity {
 	// perform this explicit override
 	@Override
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
-		if (this.getPassengerList().size() > 0 && this.canAddPassenger(player)) {
+		if (this.canAddPassenger(player)) {
 			player.startRiding(this);
-			return ActionResult.success(this.world.isClient);
+			return ActionResult.success(this.getWorld().isClient);
 		}
 		return super.interactMob(player, hand);
 	}
