@@ -1,46 +1,44 @@
 package de.tobiasvonmassow.kaffees_dual_ride.mixin;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AbstractHorseEntity.class)
 public abstract class Kaffees_Dual_Ride_Mixin extends AnimalEntity {
+
+	@Shadow
+	private float lastAngryAnimationProgress;
 
 	protected Kaffees_Dual_Ride_Mixin(EntityType<? extends AbstractHorseEntity> arg, World arg2) {
 		super((EntityType<? extends AnimalEntity>) arg, arg2);
 	}
 
-	@Inject(at = @At(value = "TAIL"), method = "updatePassengerPosition(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/Entity$PositionUpdater;)V", locals = LocalCapture.CAPTURE_FAILHARD)
-	private void injected(Entity passenger, Entity.PositionUpdater positionUpdater, CallbackInfo ci) {
-		// don't reposition riders if there is only one rider
-		if (((AbstractHorseEntity) (Object) this).getPassengerList().size() < 2)
-			return;
-		// set passengerposition to the position of the horse
+	@Invoker("getPassengerAttachmentY")
+	protected abstract float invokeGetPassengerAttachmentY(EntityDimensions dimensions, float scaleFactor);
+
+	@Inject(method = "getPassengerAttachmentPos", at = @At(value = "HEAD", target = "Lnet/minecraft/entity/passive/AbstractHorseEntity;getPassengerAttachmentPos(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/EntityDimensions;F)Lorg/joml/Vector3f;"), cancellable = true)
+	private void injected(Entity passenger, EntityDimensions dimensions, float scaleFactor, CallbackInfoReturnable<Vector3f> cir) {
 		int i = ((AbstractHorseEntity) (Object) this).getPassengerList().indexOf(passenger);
-		// horizontal offset
-		float horizontal_offset = (float) ((((AbstractHorseEntity) (Object) this).isRemoved() ? (double) 0.01f
-				: ((AbstractHorseEntity) (Object) this).getMountedHeightOffset()) + passenger.getHeightOffset());
-		// first passenger is offset by 0.2, second passenger is offset by -0.6
-		float x_offset = i == 0 ? 0.2f : -0.6f;
-		// rotate passengers with horse
-		Vec3d vec3d = new Vec3d(x_offset, 0.0, 0.0)
-				.rotateY(-((AbstractHorseEntity) (Object) this).getYaw() * ((float) Math.PI / 180) - 1.5707964f);
-		passenger.setPosition(((AbstractHorseEntity) (Object) this).getX() + vec3d.x,
-				((AbstractHorseEntity) (Object) this).getY() + (double) horizontal_offset,
-				((AbstractHorseEntity) (Object) this).getZ() + vec3d.z);
+		float offset = 0;
+		if (((AbstractHorseEntity) (Object) this).getPassengerList().size() > 1) {
+			offset = i == 0 ? 0.2f : -0.6f;
+		}
+		cir.setReturnValue(new Vector3f(0.0f, invokeGetPassengerAttachmentY(dimensions, scaleFactor) + 0.15f * lastAngryAnimationProgress * scaleFactor, -0.7f * lastAngryAnimationProgress * scaleFactor + offset));
 	}
 
 	// abstract class + constructor required, so I can extend AnimalEntity to
