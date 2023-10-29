@@ -1,7 +1,5 @@
 name: Build and Publish
 on:
-  push:
-    branches: [release]
 
 jobs:
   publish:
@@ -27,9 +25,7 @@ jobs:
         uses: Kir-Antipov/mc-publish@v3.2
         with:
           loaders: fabric
-          game-versions: '1.19.2'
           files-primary: build/libs/!(*-@(dev|sources|javadoc)).jar
-          files-secondary: build/libs/*-@(dev|sources|javadoc).jar
         
           modrinth-id: dv1QW2PN
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
