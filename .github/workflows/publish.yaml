@@ -31,7 +31,7 @@ jobs:
       - name: Publish to Modrinth and Curseforge
         uses: Kir-Antipov/mc-publish@v3.2
         with:
-          name: ${{ steps.get_mod_info.outputs.mod_name }} ${{ steps.get_mod_info.outputs.mod_version }} ${{ steps.get_mod_info.outputs.minecraft_version }}
+          name: ${{ steps.get_mod_info.outputs.mod_name }} ${{ steps.get_mod_info.outputs.mod_version }} for Minecraft ${{ steps.get_mod_info.outputs.minecraft_version }}
           loaders: fabric
           files-primary: build/libs/!(*-@(dev|sources|javadoc)).jar
         
