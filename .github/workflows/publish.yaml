@@ -19,11 +19,19 @@ jobs:
           java-version: 17
           
       - name: Clean Build
-        run: ./gradlew clean build --no-daemon    
+        run: ./gradlew clean build --no-daemon
+
+      - name: Get Mod Info
+        id: get_mod_info
+        uses: christian-draeger/read-properties@1.1.1
+        with:
+          path: gradle.properties
+          properties: 'mod_name mod_version minecraft_version'
         
       - name: Publish to Modrinth and Curseforge
         uses: Kir-Antipov/mc-publish@v3.2
         with:
+          name: ${{ steps.get_mod_info.outputs.mod_name }} ${{ steps.get_mod_info.outputs.mod_version }} ${{ steps.get_mod_info.outputs.minecraft_version }}
           loaders: fabric
           files-primary: build/libs/!(*-@(dev|sources|javadoc)).jar
         
