@@ -3,9 +3,11 @@ package de.tobiasvonmassow.kaffees_dual_ride.mixin;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
@@ -19,6 +21,14 @@ public abstract class Kaffees_Dual_Ride_Mixin extends AnimalEntity {
 
 	@Shadow
 	private float lastAngryAnimationProgress;
+
+	@Shadow public abstract void equipHorseArmor(PlayerEntity player, ItemStack stack);
+
+	@Shadow public abstract boolean isTame();
+
+	@Shadow public abstract void openInventory(PlayerEntity player);
+
+	@Shadow protected abstract void putPlayerOnBack(PlayerEntity player);
 
 	protected Kaffees_Dual_Ride_Mixin(EntityType<? extends AbstractHorseEntity> arg, World arg2) {
 		super(arg, arg2);
@@ -36,11 +46,28 @@ public abstract class Kaffees_Dual_Ride_Mixin extends AnimalEntity {
 
 	@Override
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
-		if (this.canAddPassenger(player)) {
-			player.startRiding(this);
+		if (this.isBaby()) {
+			return super.interactMob(player, hand);
+		} else if (this.isTame() && player.shouldCancelInteraction()) {
+			this.openInventory(player);
+			return ActionResult.success(this.getWorld().isClient);
+		} else {
+			ItemStack itemStack = player.getStackInHand(hand);
+			if (!itemStack.isEmpty()) {
+				ActionResult actionResult = itemStack.useOnEntity(player, this, hand);
+				if (actionResult.isAccepted()) {
+					return actionResult;
+				}
+
+				if (this.canUseSlot(EquipmentSlot.BODY) && this.isHorseArmor(itemStack) && !this.isWearingBodyArmor()) {
+					this.equipHorseArmor(player, itemStack);
+					return ActionResult.success(this.getWorld().isClient);
+				}
+			}
+
+			this.putPlayerOnBack(player);
 			return ActionResult.success(this.getWorld().isClient);
 		}
-		return super.interactMob(player, hand);
 	}
 
 	@Override
