@@ -9,11 +9,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           cache: gradle
-          java-version: 17
+          java-version: 21
           
       - name: Clean Build
         run: ./gradlew clean build --no-daemon
