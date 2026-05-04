@@ -18,11 +18,28 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import net.minecraft.item.ItemStack;
+
 @Mixin(AbstractHorseEntity.class)
 public abstract class Kaffees_Dual_Ride_Mixin extends AnimalEntity {
 
 	@Shadow
 	private float lastAngryAnimationProgress;
+
+	@Shadow public abstract void equipHorseArmor(PlayerEntity player, ItemStack stack);
+
+	@Shadow public abstract boolean hasArmorInSlot();
+
+	@Shadow public abstract boolean isTame();
+
+	@Shadow public abstract void openInventory(PlayerEntity player);
+
+	@Shadow public abstract boolean hasArmorSlot();
+
+	@Shadow public abstract boolean isHorseArmor(ItemStack item);
+
+	@Shadow protected abstract void putPlayerOnBack(PlayerEntity player);
+
 
 	protected Kaffees_Dual_Ride_Mixin(EntityType<? extends AbstractHorseEntity> arg, World arg2) {
 		super((EntityType<? extends AnimalEntity>) arg, arg2);
@@ -41,15 +58,30 @@ public abstract class Kaffees_Dual_Ride_Mixin extends AnimalEntity {
 		cir.setReturnValue(new Vector3f(0.0f, invokeGetPassengerAttachmentY(dimensions, scaleFactor) + 0.15f * lastAngryAnimationProgress * scaleFactor, -0.7f * lastAngryAnimationProgress * scaleFactor + offset));
 	}
 
-	// abstract class + constructor required, so I can extend AnimalEntity to
-	// perform this explicit override
 	@Override
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
-		if (this.canAddPassenger(player)) {
-			player.startRiding(this);
+		if (this.isBaby()) {
+			return super.interactMob(player, hand);
+		} else if (this.isTame() && player.shouldCancelInteraction()) {
+			this.openInventory(player);
+			return ActionResult.success(this.getWorld().isClient);
+		} else {
+			ItemStack itemStack = player.getStackInHand(hand);
+			if (!itemStack.isEmpty()) {
+				ActionResult actionResult = itemStack.useOnEntity(player, this, hand);
+				if (actionResult.isAccepted()) {
+					return actionResult;
+				}
+				if (this.hasArmorSlot() && this.isHorseArmor(itemStack) && !this.hasArmorInSlot()) {
+					this.equipHorseArmor(player, itemStack);
+					return ActionResult.success(this.getWorld().isClient);
+				}
+			}
+
+			this.putPlayerOnBack(player);
 			return ActionResult.success(this.getWorld().isClient);
 		}
-		return super.interactMob(player, hand);
+
 	}
 
 	@Override
