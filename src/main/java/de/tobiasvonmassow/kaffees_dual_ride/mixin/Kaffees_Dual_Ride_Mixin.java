@@ -4,9 +4,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -39,15 +36,9 @@ public abstract class Kaffees_Dual_Ride_Mixin extends AnimalEntity {
 		positionUpdater.accept(passenger, this.getX() + vec3d.x + (double) (h * f), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset() + (double) i, this.getZ() + vec3d.z - (double) (h * g));
 	}
 
-	// abstract class + constructor required, so I can extend AnimalEntity to
-	// perform this explicit override
 	@Override
-	public ActionResult interactMob(PlayerEntity player, Hand hand) {
-		if (this.canAddPassenger(player)) {
-			player.startRiding(this);
-			return ActionResult.success(this.getWorld().isClient);
-		}
-		return super.interactMob(player, hand);
+	public boolean hasPassengers() {
+		return false;
 	}
 
 	@Override
