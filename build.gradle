@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.6-SNAPSHOT'
+	id 'fabric-loom' version '1.16.1'
 	id 'maven-publish'
 }
 
@@ -28,6 +28,40 @@ loom {
 		}
 	}
 
+	runs {
+		client {
+			name = "Client 1"
+			client()
+			runDir = "run1"
+			programArgs "--username", "User1"
+		}
+
+		client2 {
+			name = "Client 2"
+			client()
+			runDir = "run2"
+			programArgs "--username", "User2"
+		}
+	}
+}
+
+import org.gradle.internal.os.OperatingSystem
+
+tasks.register("launch2clients") {
+	group = "fabric"
+	description = "Launches both Minecraft clients for testing"
+
+	doLast {
+		def gradleCommand = OperatingSystem.current().isWindows() ? "gradlew.bat" : "./gradlew"
+
+		println "Launching both Minecraft clients..."
+
+		def client1 = new ProcessBuilder(gradleCommand, "runClient").inheritIO().start()
+		def client2 = new ProcessBuilder(gradleCommand, "runClient2").inheritIO().start()
+
+		client1.waitFor()
+		client2.waitFor()
+	}
 }
 
 dependencies {
