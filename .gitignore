@@ -32,3 +32,6 @@ bin/
 # fabric
 
 run/
+run1/
+run2/
+remappedSrc/
