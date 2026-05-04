@@ -45,29 +45,8 @@ public abstract class Kaffees_Dual_Ride_Mixin extends AnimalEntity {
 	}
 
 	@Override
-	public ActionResult interactMob(PlayerEntity player, Hand hand) {
-		if (this.isBaby()) {
-			return super.interactMob(player, hand);
-		} else if (this.isTame() && player.shouldCancelInteraction()) {
-			this.openInventory(player);
-			return ActionResult.success(this.getWorld().isClient);
-		} else {
-			ItemStack itemStack = player.getStackInHand(hand);
-			if (!itemStack.isEmpty()) {
-				ActionResult actionResult = itemStack.useOnEntity(player, this, hand);
-				if (actionResult.isAccepted()) {
-					return actionResult;
-				}
-
-				if (this.canUseSlot(EquipmentSlot.BODY) && this.isHorseArmor(itemStack) && !this.isWearingBodyArmor()) {
-					this.equipHorseArmor(player, itemStack);
-					return ActionResult.success(this.getWorld().isClient);
-				}
-			}
-
-			this.putPlayerOnBack(player);
-			return ActionResult.success(this.getWorld().isClient);
-		}
+	public boolean hasPassengers() {
+		return false;
 	}
 
 	@Override
