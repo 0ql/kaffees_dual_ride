@@ -1,78 +1,78 @@
 package de.tobiasvonmassow.kaffees_dual_ride.mixin;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.passive.AbstractHorseEntity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.equine.AbstractHorse;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(AbstractHorseEntity.class)
-public abstract class Kaffees_Dual_Ride_Mixin extends AnimalEntity {
+@Mixin(AbstractHorse.class)
+public abstract class Kaffees_Dual_Ride_Mixin extends Animal {
 
 	@Shadow
-	private float lastAngryAnimationProgress;
+	private float standAnimO;
 
-	@Shadow public abstract void equipHorseArmor(PlayerEntity player, ItemStack stack);
+	@Shadow public abstract void equipBodyArmor(Player player, ItemStack stack);
 
-	@Shadow public abstract boolean isTame();
+	@Shadow public abstract boolean isTamed();
 
-	@Shadow public abstract void openInventory(PlayerEntity player);
+	@Shadow public abstract void openCustomInventoryScreen(Player player);
 
-	@Shadow protected abstract void putPlayerOnBack(PlayerEntity player);
+	@Shadow protected abstract void doPlayerRide(Player player);
 
-	protected Kaffees_Dual_Ride_Mixin(EntityType<? extends AbstractHorseEntity> arg, World arg2) {
+	protected Kaffees_Dual_Ride_Mixin(EntityType<? extends AbstractHorse> arg, Level arg2) {
 		super(arg, arg2);
 	}
 
 	@Override
-	public Vec3d getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
-		int i = this.getPassengerList().indexOf(passenger);
+	public Vec3 getPassengerAttachmentPoint(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		int i = this.getPassengers().indexOf(passenger);
 		float offset = 0;
-		if (this.getPassengerList().size() > 1) {
+		if (this.getPassengers().size() > 1) {
 			offset = i == 0 ? 0.2f : -0.6f;
 		}
-		return super.getPassengerAttachmentPos(passenger, dimensions, scaleFactor).add((new Vec3d(0.0, 0.15f * lastAngryAnimationProgress * scaleFactor, -0.7f * lastAngryAnimationProgress * scaleFactor + offset)).rotateY(-this.getYaw() * 0.017453292F));
+		return super.getPassengerAttachmentPoint(passenger, dimensions, scaleFactor).add((new Vec3(0.0, 0.15f * standAnimO * scaleFactor, -0.7f * standAnimO * scaleFactor + offset)).yRot(-this.getYRot() * 0.017453292F));
 	}
 
 	@Override
-	public ActionResult interactMob(PlayerEntity player, Hand hand) {
+	public InteractionResult mobInteract(Player player, InteractionHand hand) {
 		if (this.isBaby()) {
-			return super.interactMob(player, hand);
-		} else if (this.isTame() && player.shouldCancelInteraction()) {
-			this.openInventory(player);
-			return ActionResult.SUCCESS;
+			return super.mobInteract(player, hand);
+		} else if (this.isTamed() && player.isSecondaryUseActive()) {
+			this.openCustomInventoryScreen(player);
+			return InteractionResult.SUCCESS;
 		} else {
-			ItemStack itemStack = player.getStackInHand(hand);
+			ItemStack itemStack = player.getItemInHand(hand);
 			if (!itemStack.isEmpty()) {
-				ActionResult actionResult = itemStack.useOnEntity(player, this, hand);
-				if (actionResult.isAccepted()) {
+				InteractionResult actionResult = itemStack.interactLivingEntity(player, this, hand);
+				if (actionResult.consumesAction()) {
 					return actionResult;
 				}
 
-				if (this.canEquip(itemStack, EquipmentSlot.BODY) && !this.isWearingBodyArmor()) {
-					this.equipHorseArmor(player, itemStack);
-					return ActionResult.SUCCESS;
+				if (this.isEquippableInSlot(itemStack, EquipmentSlot.BODY) && !this.isWearingBodyArmor()) {
+					this.equipBodyArmor(player, itemStack);
+					return InteractionResult.SUCCESS;
 				}
 			}
 
-			this.putPlayerOnBack(player);
-			return ActionResult.SUCCESS;
+			this.doPlayerRide(player);
+			return InteractionResult.SUCCESS;
 		}
 	}
 
 	@Override
 	protected boolean canAddPassenger(Entity passenger) {
-		return this.getPassengerList().size() < 2;
+		return this.getPassengers().size() < 2;
 	}
 
 }
