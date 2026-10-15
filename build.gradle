@@ -1,46 +1,51 @@
 plugins {
-	id 'net.fabricmc.fabric-loom' version "${loom_version}"
+	id 'java-library'
 	id 'maven-publish'
+	id 'net.neoforged.moddev' version '2.0.148'
 }
 
 version = project.mod_version
 group = project.maven_group
 
 base {
-	archivesName = "${project.archives_base_name}-mc${project.minecraft_version}"
+	archivesName = "${project.archives_base_name}-neoforge-mc${project.minecraft_version_label}"
 }
 
 repositories {
 	// Add repositories to retrieve artifacts from in here.
 	// You should only use this when depending on other mods because
-	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
+	// ModDevGradle adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
 }
 
-loom {
-	splitEnvironmentSourceSets()
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
-	mods {
-		"modid" {
-			sourceSet sourceSets.main
-			sourceSet sourceSets.client
-		}
-	}
+neoForge {
+	version = project.neo_version
 
 	runs {
 		client {
-			name = "Client 1"
 			client()
-			runDir = "run1"
-			programArgs "--username", "User1"
+			gameDirectory = project.file('run1')
+			programArguments.addAll '--username', 'User1'
 		}
 
 		client2 {
-			name = "Client 2"
 			client()
-			runDir = "run2"
-			programArgs "--username", "User2"
+			gameDirectory = project.file('run2')
+			programArguments.addAll '--username', 'User2'
+		}
+
+		server {
+			server()
+			programArgument '--nogui'
+		}
+	}
+
+	mods {
+		"${mod_id}" {
+			sourceSet(sourceSets.main)
 		}
 	}
 }
@@ -48,7 +53,7 @@ loom {
 import org.gradle.internal.os.OperatingSystem
 
 tasks.register("launch2clients") {
-	group = "fabric"
+	group = "neoforge"
 	description = "Launches both Minecraft clients for testing"
 
 	doLast {
@@ -64,36 +69,30 @@ tasks.register("launch2clients") {
 	}
 }
 
-dependencies {
-	// To change the versions see the gradle.properties file
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	// implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+	var replaceProperties = [
+			minecraft_version_range: minecraft_version_range,
+			neo_version            : neo_version,
+			mod_id                 : mod_id,
+			mod_name               : mod_name,
+			mod_license            : mod_license,
+			mod_version            : mod_version,
+	]
+	inputs.properties replaceProperties
+	expand replaceProperties
+	from "src/main/templates"
+	into "build/generated/sources/modMetadata"
 }
-
-processResources {
-	inputs.property "version", project.version
-
-	filesMatching("fabric.mod.json") {
-		expand "version": project.version
-	}
-}
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = 25
+	options.encoding = 'UTF-8'
+	options.release = 25
 }
 
 java {
-	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-	// if it is present.
-	// If you remove this line, sources will not be generated.
 	withSourcesJar()
-
-	sourceCompatibility = JavaVersion.VERSION_25
-	targetCompatibility = JavaVersion.VERSION_25
 }
 
 jar {
