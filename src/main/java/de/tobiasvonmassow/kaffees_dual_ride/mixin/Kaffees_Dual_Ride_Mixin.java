@@ -50,7 +50,7 @@ public abstract class Kaffees_Dual_Ride_Mixin extends Animal {
 			return super.mobInteract(player, hand);
 		} else if (this.isTamed() && player.isSecondaryUseActive()) {
 			this.openCustomInventoryScreen(player);
-			return InteractionResult.sidedSuccess(this.level().isClientSide);
+			return InteractionResult.SUCCESS;
 		} else {
 			ItemStack itemStack = player.getItemInHand(hand);
 			if (!itemStack.isEmpty()) {
@@ -59,14 +59,14 @@ public abstract class Kaffees_Dual_Ride_Mixin extends Animal {
 					return actionResult;
 				}
 
-				if (this.canUseSlot(EquipmentSlot.BODY) && this.isBodyArmorItem(itemStack) && !this.isWearingBodyArmor()) {
+				if (this.isEquippableInSlot(itemStack, EquipmentSlot.BODY) && !this.isWearingBodyArmor()) {
 					this.equipBodyArmor(player, itemStack);
-					return InteractionResult.sidedSuccess(this.level().isClientSide);
+					return InteractionResult.SUCCESS;
 				}
 			}
 
 			this.doPlayerRide(player);
-			return InteractionResult.sidedSuccess(this.level().isClientSide);
+			return InteractionResult.SUCCESS;
 		}
 	}
 
