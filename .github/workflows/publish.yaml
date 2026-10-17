@@ -13,7 +13,7 @@ jobs:
         with:
           distribution: temurin
           cache: gradle
-          java-version: 25
+          java-version: 21
           
       - name: Clean Build
         run: ./gradlew clean build --no-daemon

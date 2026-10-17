@@ -19,7 +19,7 @@ repositories {
 	// for more information about repositories.
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 neoForge {
 	version = project.neo_version
@@ -88,7 +88,7 @@ neoForge.ideSyncTask generateModMetadata
 
 tasks.withType(JavaCompile).configureEach {
 	options.encoding = 'UTF-8'
-	options.release = 25
+	options.release = 21
 }
 
 java {

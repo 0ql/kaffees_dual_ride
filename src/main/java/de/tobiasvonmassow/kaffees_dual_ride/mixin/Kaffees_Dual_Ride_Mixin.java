@@ -7,7 +7,7 @@ import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.equine.AbstractHorse;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -50,7 +50,7 @@ public abstract class Kaffees_Dual_Ride_Mixin extends Animal {
 			return super.mobInteract(player, hand);
 		} else if (this.isTamed() && player.isSecondaryUseActive()) {
 			this.openCustomInventoryScreen(player);
-			return InteractionResult.SUCCESS;
+			return InteractionResult.sidedSuccess(this.level().isClientSide);
 		} else {
 			ItemStack itemStack = player.getItemInHand(hand);
 			if (!itemStack.isEmpty()) {
@@ -59,14 +59,14 @@ public abstract class Kaffees_Dual_Ride_Mixin extends Animal {
 					return actionResult;
 				}
 
-				if (this.isEquippableInSlot(itemStack, EquipmentSlot.BODY) && !this.isWearingBodyArmor()) {
+				if (this.canUseSlot(EquipmentSlot.BODY) && this.isBodyArmorItem(itemStack) && !this.isWearingBodyArmor()) {
 					this.equipBodyArmor(player, itemStack);
-					return InteractionResult.SUCCESS;
+					return InteractionResult.sidedSuccess(this.level().isClientSide);
 				}
 			}
 
 			this.doPlayerRide(player);
-			return InteractionResult.SUCCESS;
+			return InteractionResult.sidedSuccess(this.level().isClientSide);
 		}
 	}
 
